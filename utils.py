@@ -40,7 +40,7 @@ class Utils:
         region_security_group_name = self.get_security_group(region)
         region,architecture,image = self.get_last_image_ami(region, architecture)
         key_pair_name = self.get_key_pairs(region)
-        subnet_name = self.get_subnet_name(region)
+        subnet_id = self.get_subnet_id(region)
 
         self.logger.info("{}".format("Creating instance " + instance_name ))
 
@@ -58,7 +58,7 @@ class Utils:
             ],
             ImageId=image, 
             InstanceType = 't2.micro',  
-            SubnetId=subnet_name,
+            SubnetId=subnet_id,
             SecurityGroupIds=[region_security_group_name],
             MaxCount=1,
             MinCount=1,
@@ -137,7 +137,7 @@ class Utils:
         key_pair = response['KeyPairs'][0]['KeyName']
         return key_pair
 
-    def get_subnet_name(self,region):
+    def get_subnet_id(self,region):
         
         client = boto3.client('ec2',region)
         response = client.describe_subnets(
@@ -150,8 +150,8 @@ class Utils:
                 },
             ],
         )
-        subnet_name = response['Subnets'][0]['SubnetId']
-        return subnet_name
+        subnet_id = response['Subnets'][0]['SubnetId']
+        return subnet_id
 
 
     def terminate_ec2_instance(self,region,instance_id):
